@@ -13,10 +13,10 @@ import java.util.stream.Collectors;
 @Service
 public class EmployeeService {
 
-    public GetAllEmployeeApiResponse getEmployeesByNameSearch(GetAllEmployeeApiResponse apiResponse, String empName) {
+    public GetAllEmployeeApiResponse getEmployeesByNameSearch(GetAllEmployeeApiResponse apiResponse, String searchString) {
         GetAllEmployeeApiResponse getAllEmployeeApiResponse = new GetAllEmployeeApiResponse();
         List<Employee> employees = apiResponse.getData().stream()
-                .filter(employee -> employee.getEmployee_name().equalsIgnoreCase(empName))
+                .filter(employee -> employee.getEmployee_name().toLowerCase().contains(searchString.toLowerCase()))
                 .collect(Collectors.toList());
         getAllEmployeeApiResponse.setStatus(apiResponse.getStatus());
         getAllEmployeeApiResponse.setMessage(apiResponse.getMessage());

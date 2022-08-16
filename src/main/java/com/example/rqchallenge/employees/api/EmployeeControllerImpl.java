@@ -28,6 +28,8 @@ public class EmployeeControllerImpl implements IEmployeeController {
     private EmployeeService employeeService;
 
     private static final String DUMMY_API_URL = "https://dummy.restapiexample.com/api/v1/";
+    private static final String EMP_URI = "/employees";
+    private static final String STATUS_FAILED = "Failed";
 
     /**
      * @return all employees data
@@ -37,7 +39,7 @@ public class EmployeeControllerImpl implements IEmployeeController {
         WebClient webClient = WebClient.create();
         try {
             ResponseEntity<GetAllEmployeeApiResponse> response = webClient.get()
-                    .uri(DUMMY_API_URL + "/employees")
+                    .uri(DUMMY_API_URL + EMP_URI)
                     .retrieve().toEntity(GetAllEmployeeApiResponse.class)
                     .block();
             assert response != null;
@@ -45,22 +47,22 @@ public class EmployeeControllerImpl implements IEmployeeController {
         } catch (Exception e) {
             log.error(String.format("Exception while fetching all employees data %s", e.getMessage()));
             GetAllEmployeeApiResponse getAllEmployeeApiResponse = new GetAllEmployeeApiResponse();
-            getAllEmployeeApiResponse.setStatus("Failed");
+            getAllEmployeeApiResponse.setStatus(STATUS_FAILED);
             getAllEmployeeApiResponse.setMessage("Error while fetching all employees data");
             return new ResponseEntity<>(getAllEmployeeApiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * @param searchString name of the employee
-     * @return employee data for given employee_name
+     * @param searchString string input provided to search employee name
+     * @return list of employees data whose name contains or matches the string input provided
      */
     @Override
     public ResponseEntity<GetAllEmployeeApiResponse> getEmployeesByNameSearch(String searchString) {
         WebClient webClient = WebClient.create();
         try {
             ResponseEntity<GetAllEmployeeApiResponse> response = webClient.get()
-                    .uri(DUMMY_API_URL + "/employees")
+                    .uri(DUMMY_API_URL + EMP_URI)
                     .retrieve().toEntity(GetAllEmployeeApiResponse.class)
                     .block();
 
@@ -71,7 +73,7 @@ public class EmployeeControllerImpl implements IEmployeeController {
         } catch (Exception e) {
             log.error(String.format("Exception while fetching employees data %s", e.getMessage()));
             GetAllEmployeeApiResponse getAllEmployeeApiResponse = new GetAllEmployeeApiResponse();
-            getAllEmployeeApiResponse.setStatus("Failed");
+            getAllEmployeeApiResponse.setStatus(STATUS_FAILED);
             getAllEmployeeApiResponse.setMessage("Error while fetching all employees data by name");
             return new ResponseEntity<>(getAllEmployeeApiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -79,7 +81,7 @@ public class EmployeeControllerImpl implements IEmployeeController {
 
     /**
      * @param id unique id of the employee
-     * @return employee data for given id
+     * @return single employee data for given id
      */
     @Override
     public ResponseEntity<GetEmployeeApiResponse> getEmployeeById(String id) {
@@ -94,21 +96,21 @@ public class EmployeeControllerImpl implements IEmployeeController {
         } catch (Exception e) {
             log.error(String.format("Exception while fetching employees data %s", e.getMessage()));
             GetEmployeeApiResponse getEmployeeApiResponse = new GetEmployeeApiResponse();
-            getEmployeeApiResponse.setStatus("Failed");
+            getEmployeeApiResponse.setStatus(STATUS_FAILED);
             getEmployeeApiResponse.setMessage("Error while fetching employee record");
             return new ResponseEntity<>(getEmployeeApiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * @return Highest salary of employee amongst all employees
+     * @return single integer indicating the highest salary of employees
      */
     @Override
     public ResponseEntity<Integer> getHighestSalaryOfEmployees() {
         WebClient webClient = WebClient.create();
         try {
             ResponseEntity<GetAllEmployeeApiResponse> response = webClient.get()
-                    .uri(DUMMY_API_URL + "/employees")
+                    .uri(DUMMY_API_URL + EMP_URI)
                     .retrieve().toEntity(GetAllEmployeeApiResponse.class)
                     .block();
 
@@ -118,19 +120,19 @@ public class EmployeeControllerImpl implements IEmployeeController {
             return new ResponseEntity<>(highestSalaryOfEmployees, HttpStatus.OK);
         } catch (Exception e) {
             log.error(String.format("Exception while fetching highest salary of employees %s", e.getMessage()));
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * @return Employee names having top 10 highest salaries
+     * @return list of the top 10 employees based off of their salaries
      */
     @Override
     public ResponseEntity<List<String>> getTopTenHighestEarningEmployeeNames() {
         WebClient webClient = WebClient.create();
         try {
             ResponseEntity<GetAllEmployeeApiResponse> response = webClient.get()
-                    .uri(DUMMY_API_URL + "/employees")
+                    .uri(DUMMY_API_URL + EMP_URI)
                     .retrieve().toEntity(GetAllEmployeeApiResponse.class)
                     .block();
             assert response != null;
@@ -139,14 +141,13 @@ public class EmployeeControllerImpl implements IEmployeeController {
             return new ResponseEntity<>(topTenHighestEarningEmployeeNames, HttpStatus.OK);
         } catch (Exception e) {
             log.error(String.format("Exception while fetching top 10 highest salaries of employees %s", e.getMessage()));
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
      * @param employeeInput contains age, name, salary
-     * @return 200 OK if employee resource has been created successfully,
-     * 500 Internal server error if there is any problem occurred while creating employee resource
+     * @return status of success or failed based on if an employee was created
      */
     @Override
     public ResponseEntity<CreateEmployeeApiResponse> createEmployee(Map<String, Object> employeeInput) {
@@ -160,7 +161,7 @@ public class EmployeeControllerImpl implements IEmployeeController {
         } catch (Exception e) {
             log.error(String.format("Exception while creating new employee record %s", e.getMessage()));
             CreateEmployeeApiResponse createEmployeeApiResponse = new CreateEmployeeApiResponse();
-            createEmployeeApiResponse.setStatus("Failed");
+            createEmployeeApiResponse.setStatus(STATUS_FAILED);
             createEmployeeApiResponse.setMessage("Error while creating employee record");
             return new ResponseEntity<>(createEmployeeApiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -168,7 +169,7 @@ public class EmployeeControllerImpl implements IEmployeeController {
 
     /**
      * @param id unique id of employee
-     * @return success message if record deleted else failed response
+     * @return status of success or failed based on if an employee was deleted
      */
     @Override
     public ResponseEntity<DeleteEmployeeApiResponse> deleteEmployeeById(String id) {
@@ -183,7 +184,7 @@ public class EmployeeControllerImpl implements IEmployeeController {
         } catch (Exception e) {
             log.error(String.format("Exception while deleting employees record %s", e.getMessage()));
             DeleteEmployeeApiResponse deleteEmployeeApiResponse = new DeleteEmployeeApiResponse();
-            deleteEmployeeApiResponse.setStatus("Failed");
+            deleteEmployeeApiResponse.setStatus(STATUS_FAILED);
             deleteEmployeeApiResponse.setMessage("Error while deleting employee record");
             return new ResponseEntity<>(deleteEmployeeApiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
